@@ -4,7 +4,8 @@ exit_flag = False
 wrt_file = None
 counts_prev = None
 counts_now = None
-interval = 10
+interval = 1
+
 n_measurements = 0
 
 

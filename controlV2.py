@@ -54,6 +54,8 @@ def stop_ni_device():
     task.close()
     #wrt_file.close()
 
+    print('NI device deactivated succesfully.')
+
     return
 
 def read_PMTcounts():
@@ -106,12 +108,15 @@ def stop_pulsar():
     # Release the object
     OphirCOM = None
 
+    print('\nPulsar deactivated succesfully.')
+
     return
 
 def read_pulsar():
     data = OphirCOM.GetData(DeviceHandle, 0)
     if len(data[0]) > 0:		# if any data available, print the first one from the batch
         print('Reading = {0}, TimeStamp = {1}, Status = {2} '.format(data[0][0] ,data[1][0] ,data[2][0]))
+        #sys.stdout.write('\r\033[KCounts at' + str(data[0][0]))
      
     else:
         print('\nNo Sensor attached to {0} !!!'.format(Device))
@@ -129,7 +134,7 @@ def main():
 
 
     for i in range(10):
-        time.sleep(1)
+        time.sleep(interval)
         read_pulsar()
         read_PMTcounts()
         print(datetime.datetime.now())
