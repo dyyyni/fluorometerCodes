@@ -16,6 +16,7 @@ wrt_file = None
 counts_prev = None
 counts_now = None
 pulsarReading = None
+n_measurements = 0
 interval = 1 # Measuring interval. Set to 1 measurement/second
 
 
@@ -87,7 +88,6 @@ def read_PMTcounts():
     global counts_now
 
     counts_now = task.ci_channels[0].ci_count
-    print(counts_now)
 
     return
 
@@ -126,15 +126,15 @@ def setup_pulsar():
 
     getFilter = OphirCOM.GetFilter(DeviceHandle, 0)
     filterPosition = getFilter[0]
-    print('The filter is set to position: ' + getFilter[1][filterPosition])
+    print('(1) The filter is set to position: ' + getFilter[1][filterPosition])
 
     getWavelengths = OphirCOM.GetWavelengths(DeviceHandle, 0)
     activeWavelength = getWavelengths[0]
-    print('The wavelength is set to: ' + getWavelengths[1][activeWavelength] + 'nm')
+    print('(2) The wavelength is set to: ' + getWavelengths[1][activeWavelength] + 'nm')
 
     getRange = OphirCOM.GetRanges(DeviceHandle, 0)
     activeRange = getRange[0]
-    print('The active measuring range is: ' + getRange[1][activeRange])
+    print('(3) The active measuring range is: ' + getRange[1][activeRange])
 
     print('If the sensor calibration needs to be adjusted, refer to Daniel Luoma\n')
 
@@ -155,16 +155,36 @@ def stop_pulsar():
     return
 
 def read_pulsar():
+    global pulsarReading
+
     data = OphirCOM.GetData(DeviceHandle, 0)
     if len(data[0]) > 0:		# if any data available, print the first one from the batch
-        print('Reading = {0}, TimeStamp = {1}, Status = {2} '.format(data[0][0] ,data[1][0] ,data[2][0]))
-        #sys.stdout.write('\r\033[KCounts at' + str(data[0][0]))
+        #print('Reading = {0}, TimeStamp = {1}, Status = {2} '.format(data[0][0] ,data[1][0] ,data[2][0]))
+        pulsarReading = data[0][0]
      
     else:
         print('\nNo Sensor attached to {0} !!!'.format(Device))
+
+    return
+
+def write_file():
+    global n_measurements
+    global counts_prev
+    global pulsarReading
+
+    counts = counts_now - counts_prev
+    n_measurements += 1
+
+    sys.stdout.write('\r\033[K|Time: ' + '{:.2f}'.format(n_measurements * interval) + 's| ' + 
+    '|Counts: ' + str(counts) + '| |Power: ' + str(pulsarReading) + '|')
+
+    wrt_file.write(str(n_measurements * interval) + ' ' + str(counts) + '\n')
+
     return
 
 def main():
+
+    global counts_prev
 
     clear_screen()
     prepare_file()
@@ -175,12 +195,17 @@ def main():
     # Pulsar setup
     start_pulsar()
 
-
+    print('=============================================')
+    print('Measurement data:')
     while True :
         time.sleep(interval)
         read_pulsar()
         read_PMTcounts()
-        print(datetime.datetime.now())
+        
+        if counts_prev != None:
+            write_file()
+        
+        counts_prev = counts_now
 
 
 if __name__ == '__main__':
