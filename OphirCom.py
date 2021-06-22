@@ -30,6 +30,10 @@ try:
     newRange = ranges[0]+1
    # set new range
    OphirCOM.SetRange(DeviceHandle, 0, newRange)
+
+   
+
+   print(OphirCOM.GetWavelengths(DeviceHandle,0))
    
    # An Example for data retrieving
    OphirCOM.StartStream(DeviceHandle, 0)		# start measuring

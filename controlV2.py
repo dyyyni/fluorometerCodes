@@ -12,11 +12,34 @@ import datetime
 
 # globals
 task = None
-exit_flag = False
 wrt_file = None
 counts_prev = None
 counts_now = None
-interval = 1
+pulsarReading = None
+interval = 1 # Measuring interval. Set to 1 measurement/second
+
+
+def prepare_file():
+
+    global wrt_file
+
+    fileName = input('Enter the filename: ')
+    save_path = os.getcwd() + '\\' + fileName
+    sys.stdout.write('Saving data to \'' + save_path + '\'\n\nTo save data and exit the program hit: ctrl + c \n\nInitialising...\n')
+    wrt_file = open(save_path, 'w')
+
+    return
+
+def exit_program():
+    print('\n*********************************************')
+    print('Exiting Program..\n')
+    stop_ni_device()
+    stop_pulsar()
+    wrt_file.close()
+    print('\nProgram Finished.')
+    print('*********************************************')
+
+    sys.exit(1)
 
 def clear_screen():
 
@@ -52,7 +75,6 @@ def start_ni_device():
 def stop_ni_device():
     task.stop()
     task.close()
-    #wrt_file.close()
 
     print('NI device deactivated succesfully.')
 
@@ -65,7 +87,6 @@ def read_PMTcounts():
     global counts_now
 
     counts_now = task.ci_channels[0].ci_count
-    #time.sleep(interval)
     print(counts_now)
 
     return
@@ -85,16 +106,37 @@ def start_pulsar():
     
     if len(DeviceList) < 1:
         print('Pulsar is not detected. Aborting program execution.')
-        sys.exit(1)
+        exit_program()
     else: print('Pulsar detected.')
 
     for Device in DeviceList:   	# if any device is connected
         DeviceHandle = OphirCOM.OpenUSBDevice(Device)	# open first device
         exists = OphirCOM.IsSensorExists(DeviceHandle, 0)
         if exists:
-            print('\n----------Data for S/N {0} ---------------'.format(Device))
+            print('\nThe active power sensor setup:')
+
+    setup_pulsar()
 
     OphirCOM.StartStream(DeviceHandle, 0)		# start measuring
+
+    return
+
+def setup_pulsar():
+    # The sensor setup : (1) Filter is out, (2) Wavelength 365nm and  (3) Range : 300uW
+
+    getFilter = OphirCOM.GetFilter(DeviceHandle, 0)
+    filterPosition = getFilter[0]
+    print('The filter is set to position: ' + getFilter[1][filterPosition])
+
+    getWavelengths = OphirCOM.GetWavelengths(DeviceHandle, 0)
+    activeWavelength = getWavelengths[0]
+    print('The wavelength is set to: ' + getWavelengths[1][activeWavelength] + 'nm')
+
+    getRange = OphirCOM.GetRanges(DeviceHandle, 0)
+    activeRange = getRange[0]
+    print('The active measuring range is: ' + getRange[1][activeRange])
+
+    print('If the sensor calibration needs to be adjusted, refer to Daniel Luoma\n')
 
     return
 
@@ -125,6 +167,7 @@ def read_pulsar():
 def main():
 
     clear_screen()
+    prepare_file()
 
     # NI-device setup
     start_ni_device()
@@ -133,17 +176,15 @@ def main():
     start_pulsar()
 
 
-    for i in range(10):
+    while True :
         time.sleep(interval)
         read_pulsar()
         read_PMTcounts()
         print(datetime.datetime.now())
-        
-
-    stop_pulsar()
-    stop_ni_device()
-
-    return
 
 
-if __name__ == '__main__': main()
+if __name__ == '__main__':
+    try:
+         main()
+    except KeyboardInterrupt:
+        exit_program()
