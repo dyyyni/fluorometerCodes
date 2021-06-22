@@ -178,7 +178,7 @@ def write_file():
     sys.stdout.write('\r\033[K|Time: ' + '{:.2f}'.format(n_measurements * interval) + 's| ' + 
     '|Counts: ' + str(counts) + '| |Power: ' + str(pulsarReading) + '|')
 
-    wrt_file.write(str(n_measurements * interval) + ' ' + str(counts) + '\n')
+    wrt_file.write(str(counts) + ' ' + str(pulsarReading) + ' ' +  str(n_measurements * interval) + '\n')
 
     return
 

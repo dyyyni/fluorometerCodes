@@ -31,7 +31,7 @@ try:
    # set new range
    OphirCOM.SetRange(DeviceHandle, 0, newRange)
 
-   
+   print(OphirCOM.GetMeasurementMode(DeviceHandle, 0))
 
    print(OphirCOM.GetWavelengths(DeviceHandle,0))
    
