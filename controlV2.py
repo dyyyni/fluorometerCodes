@@ -1,14 +1,16 @@
+'''
+Optonome controller V2
+Creator : Daniel Luoma | daniel.luoma@tuni.fi
+
+This software controls the optonome project measuring device data acquisition.
+'''
+
 import os
 import sys
+import time
 
 import nidaqmx as ni
-
-import win32gui
 import win32com.client
-import time
-import traceback
-
-import datetime
 
 # globals
 task = None
@@ -23,20 +25,29 @@ interval = 1 # Measuring interval. Set to 1 measurement/second
 def prepare_file():
 
     global wrt_file
+    global save_path
 
     fileName = input('Enter the filename: ')
     save_path = os.getcwd() + '\\' + fileName
-    sys.stdout.write('Saving data to \'' + save_path + '\'\n\nTo save data and exit the program hit: ctrl + c \n\nInitialising...\n')
+    sys.stdout.write('Saving data to \'' + save_path + '\n\nInitialising...\n')
     wrt_file = open(save_path, 'w')
 
     return
 
 def exit_program():
+    # Safe way to terminate the program
+
+    global save_path
+
     print('\n*********************************************')
     print('Exiting Program..\n')
+
     stop_ni_device()
     stop_pulsar()
     wrt_file.close()
+
+    print('\nData file saved succesfully to ' + save_path)
+
     print('\nProgram Finished.')
     print('*********************************************')
 
@@ -74,6 +85,7 @@ def start_ni_device():
     return
 
 def stop_ni_device():
+
     task.stop()
     task.close()
 
@@ -82,7 +94,6 @@ def stop_ni_device():
     return
 
 def read_PMTcounts():
-    import time
 
     global n_measurements
     global counts_now
@@ -155,6 +166,7 @@ def stop_pulsar():
     return
 
 def read_pulsar():
+
     global pulsarReading
 
     data = OphirCOM.GetData(DeviceHandle, 0)
@@ -168,6 +180,7 @@ def read_pulsar():
     return
 
 def write_file():
+
     global n_measurements
     global counts_prev
     global pulsarReading
@@ -189,12 +202,11 @@ def main():
     clear_screen()
     prepare_file()
 
-    # NI-device setup
+    # NI-device
     start_ni_device()
-
-    # Pulsar setup
+    # Pulsar
     start_pulsar()
-
+    print('To save data and exit the program hit: ctrl + c')
     print('=============================================')
     print('Measurement data:')
     while True :
@@ -211,5 +223,5 @@ def main():
 if __name__ == '__main__':
     try:
          main()
-    except KeyboardInterrupt:
+    except KeyboardInterrupt: # This way the program can be used without threading.
         exit_program()
