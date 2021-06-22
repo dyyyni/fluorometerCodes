@@ -18,6 +18,8 @@ wrt_file = None
 counts_prev = None
 counts_now = None
 pulsarReading = None
+isNi = False
+isPulsar = False
 n_measurements = 0
 interval = 1 # Measuring interval. Set to 1 measurement/second
 
@@ -38,12 +40,13 @@ def exit_program():
     # Safe way to terminate the program
 
     global save_path
+    global isPulsar
+    global isNi
 
     print('\n*********************************************')
     print('Exiting Program..\n')
-
-    stop_ni_device()
-    stop_pulsar()
+    if isNi: stop_ni_device()
+    if isPulsar: stop_pulsar()
     wrt_file.close()
 
     print('\nData file saved succesfully to ' + save_path)
@@ -65,11 +68,12 @@ def start_ni_device():
 # You can see the name of your device in the NI-MAX software if it matters to you.
 
     global task
+    global isNi
 
     devices = ni.system.system.System.local().devices
     if devices.__len__() < 1:
         print('No NI device detected. Aborting program execution.')
-        sys.exit(1)
+        exit_program()
 
     name = devices[0].name + '/ctr1'
     if devices.__len__() > 1:
@@ -77,6 +81,8 @@ def start_ni_device():
 
     if devices.__len__() == 1:
         print('NI device detected. Using device/channel \'' + name + '\'')
+
+    isNi = True
 
     task = ni.Task('digital readout')
     task.ci_channels.add_ci_count_edges_chan(name)
@@ -107,6 +113,7 @@ def start_pulsar():
     global OphirCOM
     global DeviceHandle
     global Device
+    global isPulsar
 
     OphirCOM = win32com.client.Dispatch("OphirLMMeasurement.CoLMMeasurement")
      # Stop & Close all devices
@@ -118,7 +125,9 @@ def start_pulsar():
     if len(DeviceList) < 1:
         print('Pulsar is not detected. Aborting program execution.')
         exit_program()
-    else: print('Pulsar detected.')
+    else: 
+        isPulsar = True
+        print('Pulsar detected.')
 
     for Device in DeviceList:   	# if any device is connected
         DeviceHandle = OphirCOM.OpenUSBDevice(Device)	# open first device
