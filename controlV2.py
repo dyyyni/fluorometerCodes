@@ -30,9 +30,11 @@ def prepare_file():
     global save_path
 
     fileName = input('Enter the filename: ')
-    save_path = os.getcwd() + '\\' + fileName
+    save_path = os.getcwd() + '\\' + fileName + '.csv'
     sys.stdout.write('Saving data to \'' + save_path + '\n\nInitialising...\n')
     wrt_file = open(save_path, 'w')
+    wrt_file.write('sep=,\n')
+    wrt_file.write('Counts(#/s),Power(W),Time(s)\n')
 
     return
 
@@ -199,8 +201,8 @@ def write_file():
 
     sys.stdout.write('\r\033[K|Time: ' + '{:.2f}'.format(n_measurements * interval) + 's| ' + 
     '|Counts: ' + str(counts) + '| |Power: ' + str(pulsarReading) + '|')
-
-    wrt_file.write(str(counts) + ' ' + str(pulsarReading) + ' ' +  str(n_measurements * interval) + '\n')
+    
+    wrt_file.write(str(counts) + ',' + str(pulsarReading) + ',' +  str(n_measurements * interval) + '\n')
 
     return
 
