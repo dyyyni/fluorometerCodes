@@ -217,9 +217,11 @@ def main():
     start_ni_device()
     # Pulsar
     start_pulsar()
+
     print('To save data and exit the program hit: ctrl + c')
     print('=============================================')
     print('Measurement data:')
+    
     while True :
         time.sleep(interval)
         read_pulsar()
