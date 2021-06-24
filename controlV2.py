@@ -1,8 +1,12 @@
 '''
+******************************************************************************
 Optonome controller V2
 Creator : Daniel Luoma | daniel.luoma@tuni.fi
 
 This software controls the optonome project measuring device data acquisition.
+
+The main functionality of the program i
+******************************************************************************
 '''
 
 import os
@@ -221,7 +225,7 @@ def main():
     print('To save data and exit the program hit: ctrl + c')
     print('=============================================')
     print('Measurement data:')
-    
+
     while True :
         time.sleep(interval)
         read_pulsar()
