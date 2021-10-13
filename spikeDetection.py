@@ -46,8 +46,6 @@ class real_time_peak_detection():
         self.filteredY = np.array(self.y).tolist()
         self.avgFilter = [0] * len(self.y)
         self.stdFilter = [0] * len(self.y)
-        self.avgFilter[self.lag - 1] = np.mean(self.y[0:self.lag]).tolist()
-        self.stdFilter[self.lag - 1] = np.std(self.y[0:self.lag]).tolist()
 
     # This function is used to feed new data to the algorithm. Call this function inside the for-loop for data read
     # Returns the signals array from the class-object (updated signal will be a 1 or -1, 0 will be used for no signal in the array)
