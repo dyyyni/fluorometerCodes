@@ -8,6 +8,7 @@ import spikeDetection
 
 # Globals
 niDevice = niMXControl.NIControl()
+wrt_file = None
 
 def clear_screen():
 
@@ -17,6 +18,8 @@ def clear_screen():
 
 def prepare_file():
 
+    global wrt_file
+
     fileName = input('Enter the filename: ')
     save_path = os.getcwd() + '\\' + fileName + '.csv'
     sys.stdout.write('Saving data to \'' + save_path + '\n\nInitialising...\n')
@@ -25,20 +28,26 @@ def prepare_file():
     wrt_file.write('sep=,\n')
     wrt_file.write('Counts(#/s), Signal(-1|0|1), Time(s)\n')
 
-    return wrt_file
+    return
 
-def write_file(wrt_file, counts, signal, n_measurements, interval):
+def write_file(counts, signal, n_measurements, interval):
+
+    global wrt_file
     
     wrt_file.write(str(counts) + ',' + str(signal), + ',' + str(n_measurements * interval) + '\n')
 
     return
 
 def exit_program():
+
+    global wrt_file
+
     # Used to safely deactivate the ni device 
     print('\n*********************************************')
     print('Exiting Program..\n')
 
     if niDevice.isNi: niDevice.stopNIDev()
+    wrt_file.close()
 
     print('\nProgram Finished.')
     print('*********************************************')
@@ -79,7 +88,7 @@ def main():
             counts = niDevice.counts()
             signal = detector.thresholding_algo(counts)
             consoleLog(n_measurements, counts, interval, signal)
-            write_file(wrt_file, counts, signal, n_measurements, interval)
+            write_file(counts, signal, n_measurements, interval)
             
 
         niDevice.setPrevcounts()
