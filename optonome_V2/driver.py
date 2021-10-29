@@ -6,11 +6,30 @@ import time
 import niMXControl
 import spikeDetection
 
+# Globals
 niDevice = niMXControl.NIControl()
 
 def clear_screen():
 
     os.system('cls')
+
+    return
+
+def prepare_file():
+
+    fileName = input('Enter the filename: ')
+    save_path = os.getcwd() + '\\' + fileName + '.csv'
+    sys.stdout.write('Saving data to \'' + save_path + '\n\nInitialising...\n')
+
+    wrt_file = open(save_path, 'w')
+    wrt_file.write('sep=,\n')
+    wrt_file.write('Counts(#/s), Signal(-1|0|1), Time(s)\n')
+
+    return wrt_file
+
+def write_file(wrt_file, counts, signal, n_measurements, interval):
+    
+    wrt_file.write(str(counts) + ',' + str(signal), + ',' + str(n_measurements * interval) + '\n')
 
     return
 
@@ -41,6 +60,8 @@ def main():
     clear_screen()
     niDevice.startNIDev()
 
+    wrt_file = prepare_file()
+
     if niDevice.isNi == False: exit_program()
 
     interval = niDevice.sendInterval()
@@ -54,9 +75,11 @@ def main():
         niDevice.readCounts()
 
         if niDevice.send_countsPrev() != None:
+            n_measurements = niDevice.send_n_measurements()
             counts = niDevice.counts()
             signal = detector.thresholding_algo(counts)
-            consoleLog(niDevice.send_n_measurements(), counts, interval, signal)
+            consoleLog(n_measurements, counts, interval, signal)
+            write_file(wrt_file, counts, signal, n_measurements, interval)
             
 
         niDevice.setPrevcounts()
