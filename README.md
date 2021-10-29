@@ -14,10 +14,10 @@
 <!-- PROJECT LOGO -->
 <br />
 <p align="center">
-  <h3 align="center">Python Scripts and Functions</h3>
+  <h3 align="center">Project Optonome Codes</h3>
 
   <p align="center">
-    This repository contains useful scripts and functions written in Python.
+    This repository is used for the development of a water quality measuring device used in the following Tampere University project. https://projects.tuni.fi/optonome/about/
   </p>
 </p>
 
