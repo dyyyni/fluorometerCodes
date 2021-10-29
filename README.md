@@ -46,8 +46,8 @@
 Hello! This repository is used for the development of a water quality measuring device used in the following Tampere University project.
 https://projects.tuni.fi/optonome/about/
 
-If you are working with the Python interface of nidaqmx or Pulsar this repository and the codes might be of use.
-nidaqmx : https://nidaqmx-python.readthedocs.io/en/latest/#
+If you are working with the Python interface of nidaqmx or Pulsar this repository and the codes might be of use.\
+nidaqmx : https://nidaqmx-python.readthedocs.io/en/latest/# \
 Pulsar  : https://www.ophiropt.com/laser--measurement/software/com-object
 
 All the best\
