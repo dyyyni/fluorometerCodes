@@ -4,8 +4,7 @@ import time
 
 # self-made modules
 import niMXControl
-
-niDevice = niMXControl.NIControl()
+import spikeDetection
 
 def clear_screen():
 
@@ -25,13 +24,19 @@ def exit_program():
 
     sys.exit(1)
 
-def consoleLog(n_measurements, counts, interval):
+def consoleLog(n_measurements, counts, interval, signal):
     sys.stdout.write('\r\033[K|Time: ' + '{:.2f}'.format(n_measurements * interval) + 's| ' + 
-    '|Counts: ' + str(counts))
+    '|Counts: ' + str(counts)+ '| signal: ' + str(signal))
 
     return
 
 def main():
+
+    niDevice = niMXControl.NIControl()
+
+    # Detection algorithm initalisation
+    data = []
+    detector = spikeDetection.real_time_peak_detection(data, 10, 10, 0)
 
     clear_screen()
     niDevice.startNIDev()
@@ -50,7 +55,9 @@ def main():
 
         if niDevice.send_countsPrev() != None:
             counts = niDevice.counts()
-            consoleLog(niDevice.send_n_measurements(), counts, interval)
+            signal = detector.thresholding_algo(counts)
+            consoleLog(niDevice.send_n_measurements(), counts, interval, signal)
+            
 
         niDevice.setPrevcounts()
     
