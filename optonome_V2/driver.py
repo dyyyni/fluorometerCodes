@@ -36,7 +36,7 @@ def main():
 
     # Detection algorithm initalisation
     data = []
-    detector = spikeDetection.real_time_peak_detection(data, 10, 10, 0)
+    detector = spikeDetection.real_time_peak_detection(data, 60, 10, 0)
 
     clear_screen()
     niDevice.startNIDev()
