@@ -6,6 +6,8 @@ import time
 import niMXControl
 import spikeDetection
 
+niDevice = niMXControl.NIControl()
+
 def clear_screen():
 
     os.system('cls')
@@ -31,8 +33,6 @@ def consoleLog(n_measurements, counts, interval, signal):
     return
 
 def main():
-
-    niDevice = niMXControl.NIControl()
 
     # Detection algorithm initalisation
     data = []
