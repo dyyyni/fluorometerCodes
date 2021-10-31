@@ -47,7 +47,7 @@ def exit_program():
     print('Exiting Program..\n')
 
     if niDevice.isNi: niDevice.stopNIDev()
-    wrt_file.close()
+    if wrt_file != None : wrt_file.close()
 
     print('\nProgram Finished.')
     print('*********************************************')
@@ -62,6 +62,8 @@ def consoleLog(n_measurements, counts, interval, signal):
 
 def main():
 
+    global wrt_file
+
     # Detection algorithm initalisation
     data = []
     detector = spikeDetection.real_time_peak_detection(data, 60, 10, 0)
@@ -69,9 +71,9 @@ def main():
     clear_screen()
     niDevice.startNIDev()
 
-    wrt_file = prepare_file()
-
     if niDevice.isNi == False: exit_program()
+
+    wrt_file = prepare_file()
 
     interval = niDevice.sendInterval()
 
