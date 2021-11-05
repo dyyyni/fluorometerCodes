@@ -5,6 +5,7 @@ import time
 # self-made modules
 import niMXControl
 import spikeDetection
+import threader
 
 # Globals
 niDevice = niMXControl.NIControl()
@@ -41,6 +42,7 @@ def write_file(counts, signal, n_measurements, interval):
 def exit_program():
 
     global wrt_file
+    global niDevice
 
     # Used to safely deactivate the ni device 
     print('\n*********************************************')
@@ -60,9 +62,19 @@ def consoleLog(n_measurements, counts, interval, signal):
 
     return
 
+def solenoidControl():
+
+    global niDevice
+
+    timeOpen = 1 # in seconds
+    niDevice.solenoid_ON()
+    time.sleep(timeOpen)
+    niDevice.solenoid_OFF()
+
 def main():
 
     global wrt_file
+    global niDevice
 
     # Detection algorithm initalisation
     data = []
@@ -77,6 +89,8 @@ def main():
 
     interval = niDevice.sendInterval()
 
+    solenoidThread = threader.thread('solenoid', solenoidControl)
+
     print('To save data and exit the program hit: ctrl + c')
     print('=============================================')
     print('Measurement data:')
@@ -89,6 +103,8 @@ def main():
             n_measurements = niDevice.send_n_measurements()
             counts = niDevice.counts()
             signal = detector.thresholding_algo(counts)
+            if signal == 1:
+                solenoidThread.start()
             consoleLog(n_measurements, counts, interval, signal)
             write_file(counts, signal, n_measurements, interval)
             
