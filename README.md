@@ -71,7 +71,7 @@ Distributed under the MIT License. See `LICENSE` for more information.
 
 Daniel Luoma - [@danyluoma](https://twitter.com/danyluoma) - daniel.luoma@tuni.fi
 
-Project Link: [https://github.com/dyyyni/PythonScriptsFunctions](https://github.com/dyyyni/PythonScriptsFunctions)
+Project Link: [https://github.com/dyyyni/fluorometerCodes](https://github.com/dyyyni/fluorometerCodes)
 
 
 
