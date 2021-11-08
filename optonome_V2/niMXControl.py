@@ -12,7 +12,7 @@ class NIControl:
         self.counts_prev = None
         self.counts_now = None
         self.n_measurements = 0
-        self.interval = 1 # Measuring interval. Set to 1 measurement/second
+        self.interval = 0.5 # Measuring interval. Set to 1 measurement/second
 
     # DAQ-card setup and termination
     ###########################################################################################
