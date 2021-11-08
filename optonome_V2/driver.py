@@ -6,7 +6,6 @@ import time
 # self-made modules
 import niMXControl
 import spikeDetection
-import threader
 
 # Globals
 niDevice = niMXControl.NIControl()
@@ -100,14 +99,11 @@ def main():
 
     interval = niDevice.sendInterval()
 
-    solenoidThread = threading.Thread(target=solenoidControl)
-
     print('To save data and exit the program hit: ctrl + c')
     print('=============================================')
     print('Measurement data:')
 
-    # Solenoid helper
-    activeFlag = False
+    solenoidThread = threading.Thread(target=solenoidControl)
 
     while True:
         time.sleep(interval)
@@ -117,9 +113,12 @@ def main():
             n_measurements = niDevice.send_n_measurements()
             counts = niDevice.counts()
             signal = detector.thresholding_algo(counts)
-            if signal == 1 and activeFlag == False:
-                activeFlag = True
-                activeFlag = solenoidThread.start()
+            if signal == 1 and not solenoidThread.is_alive():
+                try:
+                    solenoidThread.start()
+                except RuntimeError:
+                    solenoidThread = threading.Thread(target=solenoidControl)
+                    solenoidThread.start()
                 
             consoleLog(n_measurements, counts, interval, signal)
             write_file(counts, signal, n_measurements, interval)
