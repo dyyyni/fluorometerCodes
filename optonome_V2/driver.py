@@ -65,8 +65,6 @@ def consoleLog(n_measurements, counts, interval, signal):
 def solenoidControl():
     '''
     Controls the solenoid relay.
-    Returns : boolean False, as a flag to show the refractory period after solenoid use is done
-    and can be used again
     '''
     global niDevice
 
@@ -79,7 +77,7 @@ def solenoidControl():
 
     time.sleep(refractoryPeriod)
 
-    return False
+    return
 
 def main():
 
