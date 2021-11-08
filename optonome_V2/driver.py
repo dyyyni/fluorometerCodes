@@ -34,7 +34,7 @@ def write_file(counts, signal, n_measurements, interval):
 
     global wrt_file
     
-    wrt_file.write(str(counts) + ',' + str(signal), + ',' + str(n_measurements * interval) + '\n')
+    wrt_file.write(str(counts) + ',' + str(signal) + ',' + str(n_measurements * interval) + '\n')
 
     return
 
@@ -73,7 +73,7 @@ def main():
 
     if niDevice.isNi == False: exit_program()
 
-    wrt_file = prepare_file()
+    prepare_file()
 
     interval = niDevice.sendInterval()
 
