@@ -1,5 +1,6 @@
 import os
 import sys
+import threading
 import time
 
 # self-made modules
@@ -41,6 +42,7 @@ def write_file(counts, signal, n_measurements, interval):
 def exit_program():
 
     global wrt_file
+    global niDevice
 
     # Used to safely deactivate the ni device 
     print('\n*********************************************')
@@ -60,9 +62,29 @@ def consoleLog(n_measurements, counts, interval, signal):
 
     return
 
+def solenoidControl():
+    '''
+    Controls the solenoid relay.
+    Returns : boolean False, as a flag to show the refractory period after solenoid use is done
+    and can be used again
+    '''
+    global niDevice
+
+    timeOpen = 5 # in seconds
+    refractoryPeriod = 20 # in seconds
+
+    niDevice.solenoid_ON()
+    time.sleep(timeOpen)
+    niDevice.solenoid_OFF()
+
+    time.sleep(refractoryPeriod)
+
+    return False
+
 def main():
 
     global wrt_file
+    global niDevice
 
     # Detection algorithm initalisation
     data = []
@@ -81,6 +103,8 @@ def main():
     print('=============================================')
     print('Measurement data:')
 
+    solenoidThread = threading.Thread(target=solenoidControl)
+
     while True:
         time.sleep(interval)
         niDevice.readCounts()
@@ -89,6 +113,13 @@ def main():
             n_measurements = niDevice.send_n_measurements()
             counts = niDevice.counts()
             signal = detector.thresholding_algo(counts)
+            if signal == 1 and not solenoidThread.is_alive():
+                try:
+                    solenoidThread.start()
+                except RuntimeError:
+                    solenoidThread = threading.Thread(target=solenoidControl)
+                    solenoidThread.start()
+                
             consoleLog(n_measurements, counts, interval, signal)
             write_file(counts, signal, n_measurements, interval)
             
