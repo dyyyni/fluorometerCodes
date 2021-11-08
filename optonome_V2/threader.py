@@ -5,5 +5,3 @@ class thread(threading.Thread):
         threading.Thread.__init__(self)
         self.thread_name = thread_name
         self.function = function
-    def run(self):
-        self.function()

@@ -1,5 +1,6 @@
 import os
 import sys
+import threading
 import time
 
 # self-made modules
@@ -35,7 +36,7 @@ def write_file(counts, signal, n_measurements, interval):
 
     global wrt_file
     
-    wrt_file.write(str(counts) + ',' + str(signal), + ',' + str(n_measurements * interval) + '\n')
+    wrt_file.write(str(counts) + ',' + str(signal) + ',' + str(n_measurements * interval) + '\n')
 
     return
 
@@ -63,13 +64,23 @@ def consoleLog(n_measurements, counts, interval, signal):
     return
 
 def solenoidControl():
-
+    '''
+    Controls the solenoid relay.
+    Returns : boolean False, as a flag to show the refractory period after solenoid use is done
+    and can be used again
+    '''
     global niDevice
 
-    timeOpen = 1 # in seconds
+    timeOpen = 5 # in seconds
+    refractoryPeriod = 20 # in seconds
+
     niDevice.solenoid_ON()
     time.sleep(timeOpen)
     niDevice.solenoid_OFF()
+
+    time.sleep(refractoryPeriod)
+
+    return False
 
 def main():
 
@@ -85,15 +96,18 @@ def main():
 
     if niDevice.isNi == False: exit_program()
 
-    wrt_file = prepare_file()
+    prepare_file()
 
     interval = niDevice.sendInterval()
 
-    solenoidThread = threader.thread('solenoid', solenoidControl)
+    solenoidThread = threading.Thread(target=solenoidControl)
 
     print('To save data and exit the program hit: ctrl + c')
     print('=============================================')
     print('Measurement data:')
+
+    # Solenoid helper
+    activeFlag = False
 
     while True:
         time.sleep(interval)
@@ -103,8 +117,10 @@ def main():
             n_measurements = niDevice.send_n_measurements()
             counts = niDevice.counts()
             signal = detector.thresholding_algo(counts)
-            if signal == 1:
-                solenoidThread.start()
+            if signal == 1 and activeFlag == False:
+                activeFlag = True
+                activeFlag = solenoidThread.start()
+                
             consoleLog(n_measurements, counts, interval, signal)
             write_file(counts, signal, n_measurements, interval)
             
