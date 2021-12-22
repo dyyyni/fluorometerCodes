@@ -33,6 +33,8 @@
         <li><a href="#built-with">Built With</a></li>
       </ul>
     </li>
+    <li><a href="#optonome_V1">License</a></li>
+    <li><a href="#optonome_V2">License</a></li>
     <li><a href="#license">License</a></li>
     <li><a href="#contact">Contact</a></li>
   </ol>
@@ -58,6 +60,41 @@ All the best\
 
 * [Python](https://www.python.org/)
 
+<!-- OPTONOME_V1 -->
+## Optonome_V1
+This is a remnant from the codes before I combined everything into optonome_V2.
+Could prove useful, if you need a starting point for a new application.
+
+<!-- OPTONOME_V2 -->
+
+## Optonome_V2
+This folder contains the modular program used to drive the application.
+
+### Dependencies
+(1) 
+Make sure you have the [numpy](https://numpy.org/install/) library installed.
+```
+python -m pip install numpy
+```
+(2)
+Install the [nidaqmx]https://www.ni.com/fi-fi/support/downloads/drivers/download.ni-daqmx.html#428058 drivers for the analog-to-digital converter.
+(3)
+Install the nidaqmx python library with
+```
+python -m pip install nidaqmx
+```
+
+### Use
+After installing the depencies.
+(1) Plug in the PMT
+(2) Turn on the LED
+(3) Connect the analog-to-digital converter via usb
+
+The program should be used from the command line. Easiest way to do this is to navigate to the folder where the program files are resided and run the command:
+
+```
+python driver.py
+```
 
 <!-- LICENSE -->
 ## License

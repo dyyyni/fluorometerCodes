@@ -23,13 +23,6 @@
 # Modified to be used in the project Optonome by
 # Daniel Luoma (11.10.2021)
 #
-# To do :
-# 1. Comment the class so that it can be understood by you (and maybe by someone else) [x]
-# - Modifications for the code in order to make it usable in Optonome
-# 2. Ponder if the negative signal is of any use [x]
-#  - Maybe I want the signals array/negative signals as the return, could be interesting to see how the water behaves
-# 3. Do I need this to be a threaded action in the actual running code? []
-# 4. if so how to make it like that? Read about python threading.
 ############################################################################################################
 
 import numpy as np
